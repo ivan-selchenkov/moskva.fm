@@ -3,11 +3,15 @@ package ru.moskva.fm;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 
 public class ListenRadio extends Activity implements OnClickListener {
+
+    private static final String TAG = "Moskva.fm";
+
     /**
      * Called when the activity is first created.
      */
@@ -21,6 +25,10 @@ public class ListenRadio extends Activity implements OnClickListener {
 
         View stop_button = findViewById(R.id.stop_button);
         stop_button.setOnClickListener(this);
+
+        View test_button = findViewById(R.id.test_button);
+        test_button.setOnClickListener(this);
+
     }
 
     public void onClick(View view) {
@@ -31,6 +39,9 @@ public class ListenRadio extends Activity implements OnClickListener {
             case R.id.stop_button:
                 stopService(new Intent(this, PlayService.class));
                 break;
+            case R.id.test_button:
+                Channel ch = new Channel("4015");
+                Log.d(TAG, Utils.getNowUrl(ch));
         }
     }
 }
