@@ -48,9 +48,6 @@ public class ListenRadio extends Activity implements OnClickListener {
         View stop_button = findViewById(R.id.stop_button);
         stop_button.setOnClickListener(this);
 
-        View test_button = findViewById(R.id.test_button);
-        test_button.setOnClickListener(this);
-
         updateButtonStates();
 
     }
@@ -71,13 +68,10 @@ public class ListenRadio extends Activity implements OnClickListener {
                 break;
             case R.id.play_button:
                 playFrom();
-                setButtonState(true);
                 break;
             case R.id.stop_button:
                 stopService(new Intent(this, PlayService.class));
                 setButtonState(false);
-                break;
-            case R.id.test_button:
                 break;
         }
     }
@@ -106,6 +100,8 @@ public class ListenRadio extends Activity implements OnClickListener {
     }
 
     private void startPlay(Date from) {
+
+        setButtonState(true);
 
         Intent i = new Intent(this, PlayService.class);
 

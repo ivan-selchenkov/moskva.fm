@@ -183,7 +183,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         CharSequence text = getText(R.string.app_name);
 
         // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification(R.drawable.icon, text,
+        Notification notification = new Notification(R.drawable.player, text,
                 System.currentTimeMillis());
 
         // The PendingIntent to launch our activity if the user selects this notification
