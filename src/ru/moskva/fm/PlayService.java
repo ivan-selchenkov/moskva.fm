@@ -54,11 +54,19 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
         currentChannel = new Channel("4015");
 
-        nextTrack = currentChannel.getFirstTranslationTrack();
+        long fromTime = intent.getLongExtra("datetime", 0);
 
-        downloadTrack(nextTrack);
+        if(fromTime > 0) {
 
-        play();
+            nextTrack = currentChannel.getTrackFromTime(fromTime);
+
+            downloadTrack(nextTrack);
+
+            play();
+
+        } else {
+            this.stopSelf();
+        }
 
     }
 

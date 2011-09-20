@@ -5,10 +5,28 @@
               android:layout_height="fill_parent"
         >
     <Button
+            android:id="@+id/translation_button"
+            android:text="@string/translation_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+    <Button
             android:id="@+id/play_button"
             android:text="@string/play_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            />
+    <DatePicker
+            android:id="@+id/date_picker"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+
+    <TimePicker
+            android:id="@+id/time_picker"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+
             />
     <Button
             android:id="@+id/stop_button"

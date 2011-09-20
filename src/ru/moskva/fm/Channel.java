@@ -24,7 +24,12 @@ public class Channel {
 
         l = l - l % 60000L;
 
-        Date localDate = new Date(l);
+        return getTrackFromTime(l);
+    }
+
+    public Track getTrackFromTime(long time) {
+
+        Date localDate = new Date(time);
 
         Track track = new Track();
 
@@ -34,6 +39,7 @@ public class Channel {
 
         return track;
     }
+
 
     public Track getNextTrack(Track current) {
 
