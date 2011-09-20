@@ -32,32 +32,51 @@ public class ListenRadio extends Activity implements OnClickListener {
         View test_button = findViewById(R.id.test_button);
         test_button.setOnClickListener(this);
 
+        updateButtonStates();
+
     }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+        updateButtonStates();
+    }
+
 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.play_button:
                 startService(new Intent(this, PlayService.class));
+                setButtonState(true);
                 break;
             case R.id.stop_button:
                 stopService(new Intent(this, PlayService.class));
+                setButtonState(false);
                 break;
             case R.id.test_button:
                 break;
-//                Channel ch = new Channel("4015");
-//
-//                Track t = ch.getFirstTranslationTrack();
-//
-//                Log.d(TAG, t.url);
-//
-//                Log.d(TAG, t.date.toString());
-//
-//                Track t1 = ch.getNextTrack(t);
-//
-//                Log.d(TAG, t1.url);
-//
-//                Log.d(TAG, t1.date.toString());
-
         }
     }
+
+    private void updateButtonStates() {
+
+        boolean isStarted = PlayService.isStarted;
+
+        setButtonState(isStarted);
+
+    }
+
+    private void setButtonState(boolean state) {
+
+        View play_button = findViewById(R.id.play_button);
+
+        View stop_button = findViewById(R.id.stop_button);
+
+        play_button.setEnabled(!state);
+
+        stop_button.setEnabled(state);
+    }
+
 }

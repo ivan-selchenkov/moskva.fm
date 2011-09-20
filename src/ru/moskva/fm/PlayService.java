@@ -26,6 +26,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     private File trackFile;
     private File playFile;
 
+    static boolean isStarted = false;
+
     private boolean isPlaying = false;
 
     private MediaPlayer player;
@@ -40,6 +42,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     @Override
     public void onStart(Intent intent, int startId) {
 
+        isStarted = true;
+
         Log.d(TAG, "PlayService::onStart");
 
         Toast toast = Toast.makeText(this, R.string.start_service_toast, Toast.LENGTH_SHORT);
@@ -53,6 +57,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         nextTrack = currentChannel.getFirstTranslationTrack();
 
         downloadTrack(nextTrack);
+
+        play();
 
     }
 
@@ -70,7 +76,11 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
             nextTrack = currentChannel.getNextTrack(nextTrack);
 
-            downloadTrack(nextTrack);
+            new Thread() {
+                public void run() {
+                    downloadTrack(nextTrack);
+                }
+            }.start();
 
             try {
 
@@ -89,6 +99,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                 Log.e(TAG, e.getMessage());
             }
 
+        } else {
+            this.stopSelf();
         }
 
     }
@@ -101,9 +113,9 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
             trackFile = Utils.downloadFile(next.url);
 
-            if (!isPlaying) {
-                play();
-            }
+//            if (!isPlaying) {
+//                play();
+//            }
 
         } catch (IOException e) {
             Log.d(TAG, e.getMessage());
@@ -126,6 +138,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
     @Override
     public void onDestroy() {
+
+        isStarted = false;
 
         Log.d(TAG, "PlayService::onDestroy");
 
@@ -179,9 +193,15 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
     public void onCompletion(MediaPlayer mediaPlayer) {
 
-        Log.d(TAG, "Deleting file: " + playFile.getAbsolutePath());
+        final File fileToDelete = playFile;
 
-        playFile.delete();
+        new Thread() {
+            public void run() {
+                Log.d(TAG, "Deleting file: " + fileToDelete.getAbsolutePath());
+                fileToDelete.delete();
+            }
+        }.start();
+
 
         isPlaying = false;
 
