@@ -5,16 +5,30 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.nfc.Tag;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
-public class PlayService extends Service {
+import java.io.File;
+import java.io.IOException;
+
+public class PlayService extends Service implements MediaPlayer.OnCompletionListener {
 
     private NotificationManager mNM;
     static final String TAG = "Moskva.fm";
+
+    private Channel currentChannel;
+
+    private Track nextTrack;
+    private File trackFile;
+    private File playFile;
+
+    private boolean isPlaying = false;
+
+    private MediaPlayer player;
 
     static final int NOTIFICATION = R.string.app_name;
 
@@ -33,6 +47,68 @@ public class PlayService extends Service {
         toast.setGravity(Gravity.CENTER, 0, 0);
 
         toast.show();
+
+        currentChannel = new Channel("4015");
+
+        nextTrack = currentChannel.getFirstTranslationTrack();
+
+        downloadTrack(nextTrack);
+
+    }
+
+    private void play() {
+
+        if (trackFile != null) {
+
+            isPlaying = true;
+
+            playFile = trackFile;
+
+            trackFile = null;
+
+            player.reset();
+
+            nextTrack = currentChannel.getNextTrack(nextTrack);
+
+            downloadTrack(nextTrack);
+
+            try {
+
+                player.setDataSource(playFile.getAbsolutePath());
+
+                player.prepare();
+
+
+                player.seekTo(2000);
+
+                player.start();
+
+                Log.d(TAG, "Playing: " + playFile.getAbsolutePath());
+
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+        }
+
+    }
+
+    private void downloadTrack(Track current) {
+
+        Track next = currentChannel.getNextTrack(current);
+
+        try {
+
+            trackFile = Utils.downloadFile(next.url);
+
+            if (!isPlaying) {
+                play();
+            }
+
+        } catch (IOException e) {
+            Log.d(TAG, e.getMessage());
+        }
+
     }
 
     @Override
@@ -40,6 +116,12 @@ public class PlayService extends Service {
         mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         showNotification();
+
+        if (player == null) {
+            player = new MediaPlayer();
+            player.setOnCompletionListener(this);
+        }
+
     }
 
     @Override
@@ -55,6 +137,23 @@ public class PlayService extends Service {
 
         mNM.cancel(NOTIFICATION);
 
+        if (player != null) {
+            player.release();
+            player = null;
+        }
+
+        if (playFile != null) {
+            Log.d(TAG, "Deleting file: " + playFile.getAbsolutePath());
+            playFile.delete();
+        }
+
+        if (trackFile != null) {
+            Log.d(TAG, "Deleting file: " + trackFile.getAbsolutePath());
+            trackFile.delete();
+        }
+
+
+        super.onDestroy();
     }
 
     private void showNotification() {
@@ -78,4 +177,15 @@ public class PlayService extends Service {
     }
 
 
+    public void onCompletion(MediaPlayer mediaPlayer) {
+
+        Log.d(TAG, "Deleting file: " + playFile.getAbsolutePath());
+
+        playFile.delete();
+
+        isPlaying = false;
+
+        play();
+
+    }
 }

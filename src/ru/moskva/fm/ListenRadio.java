@@ -1,8 +1,6 @@
 package ru.moskva.fm;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,19 +43,21 @@ public class ListenRadio extends Activity implements OnClickListener {
                 stopService(new Intent(this, PlayService.class));
                 break;
             case R.id.test_button:
-                Channel ch = new Channel("4015");
+                break;
+//                Channel ch = new Channel("4015");
+//
+//                Track t = ch.getFirstTranslationTrack();
+//
+//                Log.d(TAG, t.url);
+//
+//                Log.d(TAG, t.date.toString());
+//
+//                Track t1 = ch.getNextTrack(t);
+//
+//                Log.d(TAG, t1.url);
+//
+//                Log.d(TAG, t1.date.toString());
 
-                Track t = Utils.getFirstTranslationTrack(ch);
-
-                Log.d(TAG, t.url);
-                Log.d(TAG, t.timestamp.toString());
-
-                try {
-                    File f = Utils.downloadFile(t.url);
-                    Log.d(TAG, f.getAbsolutePath());
-                } catch(IOException e) {
-
-                }
         }
     }
 }
